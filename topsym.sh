@@ -37,19 +37,25 @@ shift $(($#/2))
 
 sort -m -k2 "$@" |
 awk '
+    function printSym()
+    {
+	ShortLen = 16
+	N *= log(ShortLen + length(SYM))
+	print N "\t" SYM
+    }
     {   n = $1
 	sub(/^ *[1-9][0-9]* /, "")
 	if ($0 == SYM)
 	    N += n
 	else {
 	    if (N)
-		print N "\t" SYM
+		printSym()
 	    SYM = $0
 	    N = n
 	}
     }
     END {
 	if (N)
-	    print N "\t" SYM
+	    printSym()
     }' |
 sort -n
