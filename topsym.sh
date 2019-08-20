@@ -3,11 +3,15 @@
 DumpDir()
 {
     rpmelfsym.pl "$1"
-    find "$1" -mindepth 1 -maxdepth 1 -name '*.rpm' -execdir \
+    rpm2srpm=rpm2srpm.${1//\//_}
+    if [ ! -s "$rpm2srpm" ] || [ "$rpm2srpm" -nt "$1" ] || [ "$rpm2srpm" -ot "$1" ]; then
+	find "$1" -mindepth 1 -maxdepth 1 -name '*.rpm' -execdir \
 	rpmquery --qf '%{NAME}-%{VERSION}-%{RELEASE}.%{ARCH}.rpm\t%{SOURCERPM}\n' -p '{}' '+' |
-	sort -u >rpm2srpm
+	sort -u >"$rpm2srpm"
+	touch -r "$1" "$rpm2srpm"
+    fi
     rpmelfsym.pl "$1" |
-	join -t$'\t' -o '1.2 2.2 2.3 2.4' rpm2srpm -
+	join -t$'\t' -o '1.2 2.2 2.3 2.4' "$rpm2srpm" -
 }
 
 ProcDump()
@@ -29,6 +33,7 @@ ProcDump()
 }
 
 for d; do
+    d=${d%/}
     out=out.${d//\//_}
     DumpDir "$d" |ProcDump >$out
     set -- "$@" "$out"
