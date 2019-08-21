@@ -23,25 +23,29 @@ ProcDump()
 	$4 != "_edata"            &&
 	$4 != "_end"              &&
 	$4 != "_fini"             &&
-	$4 != "_init" {
-	    print $1 "\t" $2 "\t" $4
-	}
+	$4 != "_init"
     ' |
-    sort -t$'\t' -u -k3 -k1,2 |
+    sort -t$'\t' -u -k4 -k1,3 |
     awk -F'\t' '
 	function flushSym()
 	{
-	    N += n ** 0.63
+	    N += (n ** 0.63) * (allU ? 1.28 : 1)
 	    if (N > 1.99) # at least two srpms, or at least three subpackages
 		print N "\t" sym
 	}
-	{   if (sym == $3) {
-		if ($1 == srpm)
+	{   if (sym == $4) {
+		if ($1 == srpm && $2 == rpm) {
+		    # dups within a subpackage do not count
+		    allU = (allU && $3 == "U")
+		}
+		else if ($1 == srpm) {
 		    n++; # the same srpm, count subpackages with this symbol
+		    allU = (allU && $3 == "U")
+		}
 		else {
 		    # combine subpackage count, start another srpm
-		    N += n ** 0.63
-		    srpm = $1
+		    N += (n ** 0.63) * (allU ? 1.28 : 1)
+		    allU = ($3 == "U")
 		    n = 1
 		}
 	    }
@@ -49,10 +53,11 @@ ProcDump()
 		# another symbol, another dollar
 		if (n)
 		    flushSym()
-		sym = $3
-		srpm = $1
+		allU = ($3 == "U")
 		N = 0; n = 1
 	    }
+	    srpm = $1; rpm = $2
+	    sym = $4
 	}
 	END {
 	    if (n)
