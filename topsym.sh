@@ -31,8 +31,8 @@ ProcDump()
     awk -F'\t' '
 	function flushSym()
 	{
-	    N += sqrt(n)
-	    if (N > 1.7) # at least two srpms, or at least three subpackages
+	    N += n ** 0.63
+	    if (N > 1.99) # at least two srpms, or at least three subpackages
 		print N "\t" sym
 	}
 	{   if (sym == $3) {
@@ -40,7 +40,7 @@ ProcDump()
 		    n++; # the same srpm, count subpackages with this symbol
 		else {
 		    # combine subpackage count, start another srpm
-		    N += sqrt(n)
+		    N += n ** 0.63
 		    srpm = $1
 		    n = 1
 		}
