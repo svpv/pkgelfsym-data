@@ -10,20 +10,22 @@ DumpDir()
 	touch -r "$1" "$rpm2srpm"
     fi
     rpmelfsym.pl "$1" |
-	join -t$'\t' -o '1.2 1.1 2.3 2.4' "$rpm2srpm" -
+	join -t$'\t' -o '1.2 1.1 2.2 2.3 2.4' "$rpm2srpm" -
 }
 
 ProcDump()
 {
     awk -F'\t' '
-	$3 != "v"                 &&
-	$3 != "w"                 &&
-	$4 != "__bss_start"       &&
-	$4 != "__libc_start_main" &&
-	$4 != "_edata"            &&
-	$4 != "_end"              &&
-	$4 != "_fini"             &&
-	$4 != "_init"
+	index("UTWVDBARuiGS", $4) &&
+	$5 != "__bss_start"       &&
+	$5 != "__libc_start_main" &&
+	$5 != "_edata"            &&
+	$5 != "_end"              &&
+	$5 != "_fini"             &&
+	$5 != "_init"		  &&
+	index($3, "/usr/share/doc/") != 1 {
+	    print $1 "\t" $2 "\t" $4 "\t" $5
+	}
     ' |
     sort -t$'\t' -u -k4 -k1,3 |
     awk -F'\t' '
