@@ -2,14 +2,29 @@
 
 DumpDir()
 {
+    if (cd "$1" && set +f && set -- *.rpm && [ -f "$1" ]); then
+	subdirs=
+    elif (cd "$1" && set +f && set -- */*.rpm && [ -f "$1" ]); then
+	subdirs=1
+    else
+	echo >&2 "$1: no rpms"
+	return 1
+    fi
     rpm2srpm=rpm2srpm.${1//\//_}
     if [ ! -s "$rpm2srpm" ] || [ "$rpm2srpm" -nt "$1" ] || [ "$rpm2srpm" -ot "$1" ]; then
-	find "$1" -mindepth 1 -maxdepth 1 -name '*.rpm' -execdir \
+	depth=$((1+${subdirs:-0}))
+	find "$1" -mindepth $depth -maxdepth $depth -name '*.rpm' -execdir \
 	rpmquery --qf '%{NAME}-%{VERSION}-%{RELEASE}.%{ARCH}.rpm\t%{SOURCERPM}\n' -p '{}' '+' |
 	sort -u >"$rpm2srpm"
 	touch -r "$1" "$rpm2srpm"
     fi
-    rpmelfsym.pl "$1" |
+    if [ "${subdirs:-0}" -eq 0 ]; then
+	rpmelfsym.pl "$1"
+    else
+	cd "$1"; set +f # subshell
+	ls */*.rpm |sort -t/ -k2 |xargs --delimiter='\n' \
+	rpmelfsym.pl
+    fi |
 	join -t$'\t' -o '1.2 1.1 2.2 2.3 2.4' "$rpm2srpm" -
 }
 
