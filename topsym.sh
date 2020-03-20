@@ -112,4 +112,6 @@ awk -F'\t' '
 	if (N)
 	    printSym()
     }' |
-sort -n
+sort -n |tail -$((1<<20)) >out.1M
+tail -$((1<<16)) <out.1M >out.64k
+cut -f2 <out.64k |sort -u >topsym.list
