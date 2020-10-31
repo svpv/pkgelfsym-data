@@ -15604,7 +15604,6 @@ _ZN11QDomElementC1ERKS_
 _ZN11QDomElementC1Ev
 _ZN11QDomElementaSERKS_
 _ZN11QFileDevice12readLineDataEPcx
-_ZN11QFileDevice16staticMetaObjectE
 _ZN11QFileDevice3mapExxNS_14MemoryMapFlagsE
 _ZN11QFileDevice4seekEx
 _ZN11QFileDevice5closeEv
@@ -42192,6 +42191,7 @@ __libc_csu_fini
 __libc_csu_init
 __libc_current_sigrtmax
 __libc_current_sigrtmin
+__libc_start_main
 __log10_finite
 __log10f_finite
 __log_finite

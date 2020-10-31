@@ -33,7 +33,6 @@ ProcDump()
     awk -F'\t' '
 	index("UTWVDBARuiGS", $4) &&
 	$5 != "__bss_start"       &&
-	$5 != "__libc_start_main" &&
 	$5 != "_edata"            &&
 	$5 != "_end"              &&
 	$5 != "_fini"             &&
