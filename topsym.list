@@ -15038,6 +15038,7 @@ _ZN10hash_tableIN8hash_mapIP9tree_nodeP7rtx_def21simple_hashmap_traitsI19default
 _ZN10hash_tableIN8hash_mapIP9tree_nodePN3DFS4sccsE21simple_hashmap_traitsI19default_hash_traitsIS2_ES5_EE10hash_entryE11xcallocatorE6expandEv
 _ZN10hash_tableIN8hash_mapIP9tree_nodeS2_21simple_hashmap_traitsI19default_hash_traitsIS2_ES2_EE10hash_entryE11xcallocatorE14find_with_hashERKS2_j
 _ZN10hash_tableIN8hash_mapIP9tree_nodeS2_21simple_hashmap_traitsI19default_hash_traitsIS2_ES2_EE10hash_entryE11xcallocatorE19find_slot_with_hashERKS2_j13insert_option
+_ZN10hash_tableIN8hash_mapIP9tree_nodeS2_21simple_hashmap_traitsI19default_hash_traitsIS2_ES2_EE10hash_entryE11xcallocatorE20remove_elt_with_hashERKS2_j
 _ZN10hash_tableIN8hash_mapIP9tree_nodeS2_21simple_hashmap_traitsI19default_hash_traitsIS2_ES2_EE10hash_entryE11xcallocatorE6expandEv
 _ZN10hash_tableIN8hash_mapIP9tree_nodeS2_21simple_hashmap_traitsI19default_hash_traitsIS2_ES2_EE10hash_entryE11xcallocatorED1Ev
 _ZN10hash_tableIN8hash_mapIP9tree_nodeS2_21simple_hashmap_traitsI19default_hash_traitsIS2_ES2_EE10hash_entryE11xcallocatorED2Ev
@@ -21512,6 +21513,7 @@ _ZN17QGraphicsRotation11qt_metacastEPKc
 _ZN17QGraphicsRotation16staticMetaObjectE
 _ZN17QGraphicsRotation7setAxisEN2Qt4AxisE
 _ZN17QGraphicsRotation7setAxisERK9QVector3D
+_ZN17QGraphicsRotation8setAngleEd
 _ZN17QGraphicsRotation9setOriginERK9QVector3D
 _ZN17QGraphicsRotationC2EP7QObject
 _ZN17QGraphicsTextItem10adjustSizeEv
@@ -26936,6 +26938,7 @@ _ZN6Plasma7Service16staticMetaObjectE
 _ZN6Plasma7Service24registerOperationsSchemeEv
 _ZN6Plasma7Service7setNameERK7QString
 _ZN6Plasma7ServiceC2EP7QObject
+_ZN6Plasma7ServiceD2Ev
 _ZN6QBrush10setTextureERK7QPixmap
 _ZN6QBrush12setTransformERK10QTransform
 _ZN6QBrush15setTextureImageERK6QImage
@@ -36636,6 +36639,7 @@ _ZNK7wxTimer5GetIdEv
 _ZNK7wxTimer9IsRunningEv
 _ZNK8Fl_Group5arrayEv
 _ZNK8Fl_Menu_4sizeEv
+_ZNK8KArchive6isOpenEv
 _ZNK8KArchive9directoryEv
 _ZNK8KCModule9aboutDataEv
 _ZNK8KCModule9quickHelpEv
@@ -39879,6 +39883,7 @@ _ZTI17QGraphicsRectItem
 _ZTI17QGraphicsTextItem
 _ZTI17QNetworkCookieJar
 _ZTI17QNetworkDiskCache
+_ZTI17QPlatformMenuItem
 _ZTI17QQuickPaintedItem
 _ZTI17QSGMaterialShader
 _ZTI17QSignalTransition
@@ -40890,6 +40895,7 @@ _ZTV16wxScrolledWindow
 _ZTV16wxSplitterWindow
 _ZTV16wxTextDataObject
 _ZTV16wxTopLevelWindow
+_ZTV17QPlatformMenuItem
 _ZTV17complex_propagate
 _ZTV17ipa_node_params_t
 _ZTV17store_by_pieces_d
@@ -41870,8 +41876,6 @@ __aeabi_unwind_cpp_pr1
 __asprintf_chk
 __assert_fail
 __atan2_finite
-__bss_end__
-__bss_start__
 __ctype_b_loc
 __ctype_get_mb_cur_max
 __ctype_tolower_loc
@@ -41904,7 +41908,6 @@ __cxa_rethrow
 __cxa_thread_atexit
 __cxa_throw
 __cxa_throw_bad_array_new_length
-__data_start
 __daylight
 __divdc3
 __divdi3
@@ -41915,7 +41918,6 @@ __dn_expand
 __dn_skipname
 __dprintf_chk
 __dynamic_cast
-__end__
 __environ
 __eqtf2
 __errno_location
@@ -42180,8 +42182,6 @@ __isoc99_sscanf
 __isoc99_vfscanf
 __isoc99_vsscanf
 __letf2
-__libc_csu_fini
-__libc_csu_init
 __libc_current_sigrtmax
 __libc_current_sigrtmin
 __libc_start_main
@@ -42345,7 +42345,6 @@ __xpg_strerror_r
 __xstat
 __xstat64
 __zend_malloc
-_bss_end__
 _call_user_function_ex
 _cgo_26061493d47f_C2func_getaddrinfo
 _cgo_26061493d47f_C2func_getnameinfo
@@ -42547,7 +42546,6 @@ _sch_istable
 _sch_tolower
 _sch_toupper
 _setjmp
-_start
 _talloc_array
 _talloc_free
 _talloc_get_type_abort
@@ -42856,6 +42854,7 @@ atk_gobject_accessible_get_type
 atk_hyperlink_get_end_index
 atk_hyperlink_get_start_index
 atk_hyperlink_get_type
+atk_hyperlink_impl_get_hyperlink
 atk_hyperlink_impl_get_type
 atk_hypertext_get_type
 atk_image_get_type
@@ -50845,7 +50844,6 @@ d2utable
 daemon
 dasum_
 data_section
-data_start
 daxpy_
 daylight
 db_create
@@ -55726,6 +55724,7 @@ gnutls_psk_free_server_credentials
 gnutls_psk_set_client_credentials
 gnutls_psk_set_server_credentials_file
 gnutls_psk_set_server_dh_params
+gnutls_pubkey_deinit
 gnutls_record_check_pending
 gnutls_record_get_direction
 gnutls_record_recv
@@ -58853,7 +58852,9 @@ gtk_tool_item_set_tooltip_text
 gtk_tool_item_set_use_drag_window
 gtk_tool_item_set_visible_horizontal
 gtk_tool_item_set_visible_vertical
+gtk_tool_palette_get_group_position
 gtk_tool_palette_get_type
+gtk_tool_palette_set_group_position
 gtk_toolbar_append_element
 gtk_toolbar_append_item
 gtk_toolbar_append_space
@@ -60716,7 +60717,6 @@ magic_error
 magic_file
 magic_load
 magic_open
-main
 make_fname_decl
 make_relative_prefix
 make_relative_prefix_ignore_links

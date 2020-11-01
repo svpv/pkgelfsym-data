@@ -31,12 +31,26 @@ DumpDir()
 ProcDump()
 {
     awk -F'\t' '
-	index("UTWVDBRuiGS", $4)  &&
-	$5 != "__bss_start"       &&
-	$5 != "_edata"            &&
-	$5 != "_end"              &&
-	$5 != "_fini"             &&
-	$5 != "_init"		  &&
+	BEGIN {
+	    Junk["__bss_end__"]
+	    Junk["__bss_start"]
+	    Junk["__bss_start__"]
+	    Junk["__data_start"]
+	    Junk["__end__"]
+	    Junk["__gmon_start__"]
+	    Junk["__libc_csu_fini"]
+	    Junk["__libc_csu_init"]
+	    Junk["_bss_end__"]
+	    Junk["_edata"]
+	    Junk["_end"]
+	    Junk["_fini"]
+	    Junk["_init"]
+	    Junk["_start"]
+	    Junk["data_start"]
+	    Junk["main"]
+	}
+	index("UTWVDBRuiGS", $4) &&
+	!($5 in Junk) &&
 	index($3, "/usr/share/doc/") != 1 {
 	    print $1 "\t" $2 "\t" $4 "\t" $5
 	}
