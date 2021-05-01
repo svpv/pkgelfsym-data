@@ -55,7 +55,7 @@ ProcDump()
 	    print $1 "\t" $2 "\t" $4 "\t" $5
 	}
     ' |
-    sort -t$'\t' -u -k4 -k1,3 |
+    sort -t$'\t' -u -k4 -k1,3 --compress-program=lz4 |
     awk -F'\t' '
 	function flushSym()
 	{
