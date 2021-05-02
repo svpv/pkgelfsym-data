@@ -110,6 +110,8 @@ awk -F'\t' '
     {
 	ShortLen = 16
 	N *= log(ShortLen + length(sym))
+	if (match(sym, /^caml.*_([0-9]+)$/, A))
+	    N *= 99 / (99 + log(99 + A[1]))
 	print N "\t" sym
     }
     {   if ($2 == sym)
