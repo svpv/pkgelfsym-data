@@ -128,5 +128,10 @@ awk -F'\t' '
 	    printSym()
     }' |
 sort -n |tail -$((1<<20)) >out.1M
-tail -$((1<<16)) <out.1M >out.64k
-cut -f2 <out.64k |sort -u >topsym.list
+awk -F'\t' <out.1M '$2~/^_Z/{print$2}' |
+    tail -$((64<<10)) >topsym.list
+awk -F'\t' <out.1M '$2~/^caml.*_[0-9]+$/{print$2}' |
+    tail -$((4<<10)) >>topsym.list
+awk -F'\t' <out.1M '$2!~/^_Z|^caml.*_[0-9]+$/{print$2}' |
+    tail -$((60<<10)) >>topsym.list
+sort -u -o topsym.list{,}
