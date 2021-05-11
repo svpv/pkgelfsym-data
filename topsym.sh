@@ -129,9 +129,10 @@ awk -F'\t' '
     }' |
 sort -n |tail -$((1<<20)) >out.1M
 awk -F'\t' <out.1M '$2~/^_Z/{print$2}' |
-    tail -$((64<<10)) >topsym.list
+    tail -$((64<<10)) >out.c++
 awk -F'\t' <out.1M '$2~/^caml.*_[0-9]+$/{print$2}' |
-    tail -$((4<<10)) >>topsym.list
+    tail -$((4<<10)) >topsym.list
 awk -F'\t' <out.1M '$2!~/^_Z|^caml.*_[0-9]+$/{print$2}' |
     tail -$((60<<10)) >>topsym.list
 sort -u -o topsym.list{,}
+sort -u out.c++ >>topsym.list
