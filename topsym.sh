@@ -99,6 +99,7 @@ ProcDump()
 for d; do
     d=${d%/}
     out=out.${d//\//_}
+    [ -s "$out" ] ||
     DumpDir "$d" |ProcDump >$out
     set -- "$@" "$out"
 done
