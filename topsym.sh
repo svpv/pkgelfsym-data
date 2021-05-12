@@ -128,6 +128,8 @@ awk -F'\t' -v NFiles=$wsum '
 	N *= log(ShortLen + length(sym))
 	if (match(sym, /^caml.*_([0-9]+)$/, A))
 	    N *= 99 / (99 + log(99 + A[1]))
+	if (sym ~ /^_Z[1-9]/)
+	    N *= 0.97
 	N *= RNorm
 	print N "\t" sym
     }
