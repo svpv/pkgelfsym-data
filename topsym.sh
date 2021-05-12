@@ -96,17 +96,29 @@ ProcDump()
     '
 }
 
+w=1.0 wsum=0
+wcmd='sort -m -k2 --compress-program=lz4'
+
 for d; do
+    if [[ $d = [0-9].[0-9]* ]]; then
+	w=$d
+	continue
+    fi
     d=${d%/}
     out=out.${d//\//_}
     [ -s "$out" ] ||
     DumpDir "$d" |ProcDump >$out
-    set -- "$@" "$out"
+    if [ $w = 1.0 ]; then
+	wcmd="$wcmd $out"
+    else
+	wcmd="$wcmd <(awk -F'\t' '{print\$1*$w\"\t\"\$2}' $out)"
+    fi
+    wsum=$(perl -e "print $wsum+$w")
 done
-shift $(($#/2))
 
-sort -m -k2 "$@" --compress-program=lz4 |
-awk -F'\t' -v NFiles=$# '
+set +o posix
+eval "$wcmd" |
+awk -F'\t' -v NFiles=$wsum '
     BEGIN {
 	ShortLen = 16
 	RNorm = 1 / (log(ShortLen) * NFiles)
