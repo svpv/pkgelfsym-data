@@ -105,14 +105,18 @@ for d; do
 done
 shift $(($#/2))
 
-sort -m -k2 "$@" |
-awk -F'\t' '
+sort -m -k2 "$@" --compress-program=lz4 |
+awk -F'\t' -v NFiles=$# '
+    BEGIN {
+	ShortLen = 16
+	RNorm = 1 / (log(ShortLen) * NFiles)
+    }
     function printSym()
     {
-	ShortLen = 16
 	N *= log(ShortLen + length(sym))
 	if (match(sym, /^caml.*_([0-9]+)$/, A))
 	    N *= 99 / (99 + log(99 + A[1]))
+	N *= RNorm
 	print N "\t" sym
     }
     {   if ($2 == sym)
@@ -128,7 +132,7 @@ awk -F'\t' '
 	if (N)
 	    printSym()
     }' |
-sort -n |tail -$((1<<20)) >out.1M
+sort -g --compress-program=lz4 |tail -$((1<<20)) >out.1M
 awk -F'\t' <out.1M '$2~/^_Z/{print$2}' |
     tail -$((64<<10)) >topsym.list
 awk -F'\t' <out.1M '$2~/^caml.*_[0-9]+$/{print$2}' |
