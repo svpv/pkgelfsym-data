@@ -17,50 +17,27 @@ DumpDir()
 	rpmquery --qf '%{NAME}-%{VERSION}-%{RELEASE}.%{ARCH}.rpm\t%{SOURCERPM}\n' -p '{}' '+' |
 	sort -u >"$rpm2srpm"
     fi
-    if [ "${subdirs:-0}" -eq 0 ]; then
-	rpmelfsym.pl "$1"
-    else
-	cd "$1"; set +f # subshell
-	ls */*.rpm |sort -t/ -k2 |xargs --delimiter='\n' \
-	rpmelfsym.pl
-    fi |
-	join -t$'\t' -o '1.2 1.1 2.2 2.3 2.4' "$rpm2srpm" -
+    find "$1" -mindepth $depth -maxdepth $depth -name '*.rpm' |
+    while read -r f; do
+	rpmelfsym.pl "$f" </dev/null |cut -f2 |
+	sort -u |sed '\|^/usr/share/doc/|d;s/^/./' |
+	rpmpeek "$f" xargs -r --delimiter='\n' objdump -p |
+	awk -v rpm="${f##*/}" '
+	    /^Version [Dd]ef/,/^$/ { if (NF==4 && +$1>1) print rpm "\tA\t" $NF }
+	    /^Version [Rr]ef/,/^$/ { if (NF==4 && / 0x/) print rpm "\tU\t" $NF }'
+    done |
+	sort -u |
+	join -t$'\t' -o '1.2 1.1 2.2 2.3' "$rpm2srpm" -
 }
 
 ProcDump()
 {
-    awk -F'\t' '
-	BEGIN {
-	    Junk["__bss_end__"]
-	    Junk["__bss_start"]
-	    Junk["__bss_start__"]
-	    Junk["__data_start"]
-	    Junk["__end__"]
-	    Junk["__gmon_start__"]
-	    Junk["__libc_csu_fini"]
-	    Junk["__libc_csu_init"]
-	    Junk["_bss_end__"]
-	    Junk["_edata"]
-	    Junk["_end"]
-	    Junk["_fini"]
-	    Junk["_init"]
-	    Junk["_start"]
-	    Junk["data_start"]
-	    Junk["main"]
-	}
-	index("UTWVDBRuiGS", $4) &&
-	!($5 in Junk) &&
-	index($3, "/usr/share/doc/") != 1 {
-	    print $1 "\t" $2 "\t" $4 "\t" $5
-	}
-    ' |
     sort -t$'\t' -u -k4 -k1,3 --compress-program=lz4 |
     awk -F'\t' '
 	function flushSym()
 	{
 	    N += (n ** 0.63) * (allU ? 1.28 : 1)
-	    if (N > 1.99) # at least two srpms, or at least three subpackages
-		print N "\t" sym
+	    print N "\t" sym
 	}
 	{   if (sym == $4) {
 		if ($1 == srpm && $2 == rpm) {
@@ -104,7 +81,7 @@ for d; do
 	continue
     fi
     d=${d%/}
-    out=out.${d//\//_}
+    out=abi.${d//\//_}
     [ -s "$out" ] ||
     DumpDir "$d" |ProcDump >$out
     if [ $w = 1.0 ]; then
@@ -125,10 +102,6 @@ awk -F'\t' -v NFiles=$wsum '
     function printSym()
     {
 	N *= log(ShortLen + length(sym))
-	if (match(sym, /^caml.*_([0-9]+)$/, A))
-	    N *= 99 / (99 + log(99 + A[1]))
-	if (sym ~ /^_Z[1-9]/)
-	    N *= 0.97
 	N *= RNorm
 	print N "\t" sym
     }
@@ -145,11 +118,5 @@ awk -F'\t' -v NFiles=$wsum '
 	if (N)
 	    printSym()
     }' |
-sort -g --compress-program=lz4 |tail -$((1<<20)) >out.1M
-awk -F'\t' <out.1M '$2~/^_Z/{print$2}' |
-    tail -$((64<<10)) >topsym.list
-awk -F'\t' <out.1M '$2~/^caml.*_[0-9]+$/{print$2}' |
-    tail -$((4<<10)) >>topsym.list
-awk -F'\t' <out.1M '$2!~/^_Z|^caml.*_[0-9]+$/{print$2}' |
-    tail -$((60<<10)) >>topsym.list
-sort -u -o topsym.list{,}
+sort -g --compress-program=lz4 |tail -1024 >abi.1k
+cut -f2 abi.1k |tail -256 |sort -u >topabi.list
